@@ -62,9 +62,14 @@ class PlateCalculatorGUI:
         self.root.geometry("900x750")
         
         # genie icon
-        genie_icon = Image.open("/Users/eninsi01/Documents/DiaMOND/scripts/genie.png")   # keep this in same folder as script
-        genie_image = ImageTk.PhotoImage(genie_icon)
-        self.root.iconphoto(True, genie_image)
+        try:
+            import os
+            icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "genie.ico")
+            genie_icon = Image.open(icon_path)
+            genie_image = ImageTk.PhotoImage(genie_icon)
+            self.root.iconphoto(True, genie_image)
+        except Exception:
+            pass
 
         # color scheme
         self.colors = {
