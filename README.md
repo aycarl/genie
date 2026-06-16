@@ -157,15 +157,14 @@ Estimated plates: 1
 ## Troubleshooting
 
 - App fails on launch with tkinter errors:
-- Install a Python distribution that includes tkinter
-- On macOS, prefer official python.org installers if needed
+  - Install a Python distribution that includes tkinter
+  - On macOS, prefer official python.org installers if needed
 - `ModuleNotFoundError: PIL`:
-- Run `pip install Pillow` in the active virtual environment
+  - Run `pip install Pillow` in the active virtual environment
 - No icon shown:
-- The app falls back safely if `genie.ico` is missing or cannot be loaded
+  - The app falls back safely if `genie.ico` is missing or cannot be loaded
 - Empty result warnings:
-- Ensure input has at least one non-empty valid line
-
+  - Ensure input has at least one non-empty valid line
 ## Documentation Map
 
 - Main guide: this file
