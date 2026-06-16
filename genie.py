@@ -354,7 +354,7 @@ class PlateCalculatorGUI:
         for drug in unique_drugs_ordered:
             self.unique_drugs_listbox.insert(tk.END, drug)
 
-        self.unique_count_label.config(text=f"Total unique drugs: {len(unique_drugs_ordered)}")
+        self.unique_count_label.config(text=f"Total constituent drugs: {len(unique_drugs_ordered)}")
         messagebox.showinfo("✅ Success", f"Found {len(unique_drugs_ordered)} unique drugs!")
 
     # Runs when "Export List" is clicked.
