@@ -52,7 +52,7 @@ class PlateCalculator:
         single_count = sum(1 for combo in combos if len(combo) == 1)
 
         # Build a list of every distinct drug name that appears anywhere,
-        # keeping the order they were first seen in.
+        # preserving the iteration order over normalized combos (each combo is sorted alphabetically).
         unique_constituent_drugs = []
         seen_drugs = set()  # a "set" is used because checking "have I seen this before?" is fast
         for combo in combos:
