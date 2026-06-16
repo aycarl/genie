@@ -343,6 +343,8 @@ class PlateCalculatorGUI:
         seen_drugs = set()           # fast lookup of drugs already added
         unique_drugs_ordered = []    # keeps drugs in the order they were first seen
         for line in lines:
+            if line.lower() in ('nan', 'none', 'null'):
+                continue
             # Split "DrugA + DrugB" into ["DrugA", "DrugB"]
             drugs_in_combo = [drug.strip() for drug in line.split("+") if drug.strip()]
             for drug in drugs_in_combo:
