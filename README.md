@@ -13,9 +13,9 @@ The app takes drug combinations as input, computes key counts used in the assay 
 
 - Accepts one drug combination per line, for example `A+B` or `A+B+C`
 - Calculates:
-- Total combinations
-- Unique constituent drugs across all combinations
-- Number of single-drug entries
+  - Total combinations
+  - Unique constituent drugs across all combinations
+  - Number of single-drug entries
 - Applies the DiaMOND plate estimate formula and rounds up to a whole number
 - Extracts and exports unique drug names from the input list
 
