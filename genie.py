@@ -371,8 +371,8 @@ class PlateCalculatorGUI:
         filename = filedialog.asksaveasfilename(title="Save Unique Drugs List", defaultextension=".txt",
                                                 filetypes=[("Text files", "*.txt"), ("CSV files", "*.csv"), ("All files", "*.*")])
         if filename:
-            with open(filename, 'w') as f:
-                if filename.endswith('.csv'):
+            with open(filename, 'w', encoding='utf-8') as f:
+                if filename.lower().endswith('.csv'):
                     # CSV format: one header row, then one drug per row
                     f.write("Unique_Drugs\n")
                     for drug in drugs_list:
