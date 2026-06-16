@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiaMOND Genie</title>
+<style>
+  :root {
+    --background-main: #E1D8F4;
+    --background-secondary: #FFFFFF;
+    --accent: #943BE8;
+    --accent-dark: #7a2fc4;
+    --text-dark: #943BE8;
+    --text-light: #2E2C2C;
+    --success: #18C641;
+    --error: #DC143C;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, "San Francisco", "Helvetica Neue", Arial, sans-serif;
+    background: var(--background-main);
+    color: var(--text-light);
+    padding: 16px;
+  }
+
+  .app {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 1.5rem;
+    margin: 0 0 16px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    background: var(--background-secondary);
+    color: var(--text-dark);
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .tab-button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .panel {
+    display: none;
+    background: var(--background-secondary);
+    border-radius: 0 0 8px 8px;
+    padding: 16px;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  label {
+    display: block;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.9rem;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+  }
+
+  .params {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+
+  .params > div {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .params input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  button.action {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  button.action:hover {
+    background: var(--accent-dark);
+  }
+
+  button.action.secondary {
+    background: var(--success);
+  }
+
+  button.action.secondary:hover {
+    background: #149c33;
+  }
+
+  .results {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: var(--background-main);
+    color: var(--text-light);
+  }
+
+  .results.error {
+    background: #fde8ea;
+    color: var(--error);
+    font-weight: bold;
+  }
+
+  .results h2 {
+    margin: 0 0 8px;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+  }
+
+  .results ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .results.hidden {
+    display: none;
+  }
+
+  .unique-list {
+    list-style: decimal;
+    margin: 12px 0;
+    padding-left: 24px;
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--background-main);
+    border-radius: 6px;
+    padding: 12px 12px 12px 36px;
+  }
+
+  .count-label {
+    font-weight: bold;
+    color: var(--text-dark);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>DiaMOND Genie</h1>
+
+  <div class="tabs">
+    <button class="tab-button active" data-tab="calculator">Plate Calculator</button>
+    <button class="tab-button" data-tab="drugs">Constituent Drugs</button>
+  </div>
+
+  <div class="panel active" id="calculator">
+    <label for="combo-input">Drug Combinations</label>
+    <textarea id="combo-input" placeholder="DrugA&#10;DrugA+DrugB&#10;DrugA+DrugC"></textarea>
+
+    <div class="params">
+      <div>
+        <label for="plates-per-calc">Plates per calculation</label>
+        <input type="number" id="plates-per-calc" value="28" min="1">
+      </div>
+      <div>
+        <label for="multiplier">Multiplier</label>
+        <input type="number" id="multiplier" value="3" min="1">
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="action" id="calculate-btn">Calculate no. of plates</button>
+      <button class="action secondary" id="clear-btn">Clear All</button>
+    </div>
+
+    <div class="results hidden" id="calc-results"></div>
+  </div>
+
+  <div class="panel" id="drugs">
+    <label for="drugs-input">Drug Combinations</label>
+    <textarea id="drugs-input" placeholder="DrugA&#10;DrugA+DrugB&#10;DrugA+DrugC"></textarea>
+
+    <div class="buttons">
+      <button class="action" id="extract-btn">Extract Unique Drugs</button>
+      <button class="action secondary" id="import-btn">Import from Plate Calculator</button>
+    </div>
+
+    <p class="count-label" id="unique-count">Total unique drugs: 0</p>
+    <ol class="unique-list" id="unique-list"></ol>
+
+    <div class="buttons">
+      <button class="action" id="export-txt-btn">Export as .txt</button>
+      <button class="action" id="export-csv-btn">Export as .csv</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- Tab switching ----------
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Plate calculator ----------
+  function parseCombos(lines) {
+    const parsed = [];
+    for (const line of lines) {
+      const trimmed = (line || '').trim();
+      if (!trimmed || ['nan', 'none', 'null'].includes(trimmed.toLowerCase())) {
+        continue;
+      }
+      const drugs = trimmed.split('+').map(d => d.trim()).filter(d => d.length > 0);
+      if (drugs.length > 0) {
+        parsed.push(drugs);
+      }
+    }
+    return parsed;
+  }
+
+  function calculatePlates(lines, platesPerCalculation, multiplier) {
+    const combos = parseCombos(lines);
+    if (combos.length === 0) {
+      return { error: 'No valid combinations found' };
+    }
+
+    const singles = combos.filter(c => c.length === 1).length;
+    const seen = new Set();
+    for (const combo of combos) {
+      for (const drug of combo) {
+        seen.add(drug);
+      }
+    }
+    const uniqueConstituentDrugs = seen.size;
+    const totalCombos = combos.length;
+    const rawResult = (uniqueConstituentDrugs + singles + totalCombos) / platesPerCalculation * multiplier;
+    const finalResult = Math.ceil(rawResult);
+
+    return { singles, uniqueConstituentDrugs, totalCombos, rawResult, finalResult };
+  }
+
+  const calcResults = document.getElementById('calc-results');
+
+  document.getElementById('calculate-btn').addEventListener('click', () => {
+    const text = document.getElementById('combo-input').value.trim();
+    const platesPerCalc = parseInt(document.getElementById('plates-per-calc').value, 10);
+    const multiplier = parseInt(document.getElementById('multiplier').value, 10);
+
+    calcResults.classList.remove('hidden', 'error');
+
+    if (!text) {
+      calcResults.classList.add('error');
+      calcResults.textContent = 'Please enter some drug combinations!';
+      return;
+    }
+
+    if (!Number.isFinite(platesPerCalc) || !Number.isFinite(multiplier) || platesPerCalc <= 0) {
+      calcResults.classList.add('error');
+      calcResults.textContent = 'Please enter valid numbers for parameters.';
+      return;
+    }
+
+    const lines = text.split('\n');
+    const results = calculatePlates(lines, platesPerCalc, multiplier);
+
+    if (results.error) {
+      calcResults.classList.add('error');
+      calcResults.textContent = results.error;
+      return;
+    }
+
+    calcResults.innerHTML = `
+      <h2>You'll need ${results.finalResult} plates for your DiaMOND Assay!</h2>
+      <ul>
+        <li>Total number of drug combinations: ${results.totalCombos}</li>
+        <li>Unique constituent drugs: ${results.uniqueConstituentDrugs}</li>
+        <li>Single drugs: ${results.singles}</li>
+      </ul>
+    `;
+  });
+
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    document.getElementById('combo-input').value = '';
+    document.getElementById('drugs-input').value = '';
+    document.getElementById('unique-list').innerHTML = '';
+    document.getElementById('unique-count').textContent = 'Total unique drugs: 0';
+    calcResults.classList.add('hidden');
+    calcResults.innerHTML = '';
+  });
+
+  // ---------- Constituent drugs ----------
+  let uniqueDrugs = [];
+
+  function extractUniqueDrugs(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const seen = new Set();
+    const ordered = [];
+    for (const line of lines) {
+      const drugs = line.split('+').map(d => d.trim()).filter(d => d.length > 0);
+      for (const drug of drugs) {
+        if (!seen.has(drug)) {
+          seen.add(drug);
+          ordered.push(drug);
+        }
+      }
+    }
+    return ordered;
+  }
+
+  document.getElementById('extract-btn').addEventListener('click', () => {
+    const text = document.getElementById('drugs-input').value.trim();
+    const list = document.getElementById('unique-list');
+    const countLabel = document.getElementById('unique-count');
+
+    if (!text) {
+      list.innerHTML = '';
+      countLabel.textContent = 'Total unique drugs: 0';
+      uniqueDrugs = [];
+      alert('Please enter some drug combinations!');
+      return;
+    }
+
+    uniqueDrugs = extractUniqueDrugs(text);
+    list.innerHTML = uniqueDrugs.map(drug => `<li>${drug}</li>`).join('');
+    countLabel.textContent = `Total unique drugs: ${uniqueDrugs.length}`;
+  });
+
+  document.getElementById('import-btn').addEventListener('click', () => {
+    const manualContent = document.getElementById('combo-input').value.trim();
+    if (manualContent) {
+      document.getElementById('drugs-input').value = manualContent;
+    } else {
+      alert('No data found in Plate Calculator tab!');
+    }
+  });
+
+  function downloadBlob(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('export-txt-btn').addEventListener('click', () => {
+    if (uniqueDrugs.length === 0) {
+      alert('No unique drugs to export!');
+      return;
+    }
+    let content = 'Unique Drugs List\n';
+    content += '='.repeat(20) + '\n';
+    content += `Total count: ${uniqueDrugs.length}\n\n`;
+    uniqueDrugs.forEach((drug, i) => {
+      content += `${String(i + 1).padStart(2, ' ')}. ${drug}\n`;
+    });
+    downloadBlob(content, 'unique_drugs.txt', 'text/plain');
+  });
+
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    if (uniqueDrugs.length === 0) {
+      alert('No unique drugs to export!');
+      return;
+    }
+    let content = 'Unique_Drugs\n';
+    uniqueDrugs.forEach(drug => {
+      content += `${drug}\n`;
+    });
+    downloadBlob(content, 'unique_drugs.csv', 'text/csv');
+  });
+</script>
+</body>
+</html>
